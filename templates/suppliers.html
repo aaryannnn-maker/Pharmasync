@@ -15,9 +15,9 @@
                 <h2 class="text-3xl font-heading font-bold text-text-primary">Suppliers</h2>
                 <p class="text-text-secondary mt-1">Manage your supply chain partners</p>
             </div>
-            <button onclick="alert('Open your Add Supplier form/modal here')" class="btn btn-primary shadow-mint-md font-bold">
-                + Add New Supplier
-            </button>
+            <a href="{{ url_for('add_supplier') }}" class="btn btn-primary bg-primary text-white px-6 py-3 rounded-lg font-bold">
+    + Add New Supplier
+</a>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
