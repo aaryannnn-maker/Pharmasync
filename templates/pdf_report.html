@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        @page {
+            size: a4;
+            margin: 1.5cm;
+        }
+        body {
+            font-family: Helvetica, sans-serif;
+            color: #333;
+            font-size: 11pt;
+        }
+        .header {
+            text-align: center;
+            border-bottom: 2px solid #2563eb;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        .title { font-size: 22pt; font-weight: bold; color: #2563eb; }
+        .subtitle { font-size: 10pt; color: #666; }
+        
+        .section-title {
+            background-color: #f1f5f9;
+            padding: 5px;
+            font-weight: bold;
+            border-left: 4px solid #2563eb;
+            margin: 20px 0 10px 0;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th {
+            background-color: #2563eb;
+            color: white;
+            text-align: left;
+            padding: 8px;
+        }
+        td {
+            padding: 8px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .text-right { text-align: right; }
+        .green { color: #16a34a; font-weight: bold; }
+        .red { color: #dc2626; font-weight: bold; }
+        
+        .summary-box {
+            margin-top: 30px;
+            border: 1px solid #cbd5e1;
+            padding: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="title">PharmaSync</div>
+        <div class="subtitle">Financial Activity Report</div>
+        <p>Period: {{ start_date }} to {{ end_date }}</p>
+    </div>
+
+    <div class="section-title">CREDITS (Sales Revenue)</div>
+    <table>
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Medicine</th>
+                <th class="text-right">Qty</th>
+                <th class="text-right">Amount</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for sale in sales %}
+            <tr>
+                <td>{{ sale.sale_date.strftime('%d-%m-%Y') }}</td>
+                <td>{{ sale.medicine.name }}</td>
+                <td class="text-right">{{ sale.quantity }}</td>
+                <td class="text-right green">₹{{ "{:,.2f}".format(sale.total_amount) }}</td>
+            </tr>
+            {% endfor %}
+            {% if not sales %}
+            <tr><td colspan="4" style="text-align:center;">No sales recorded</td></tr>
+            {% endif %}
+        </tbody>
+    </table>
+
+    <div class="section-title">DEBITS (Inventory Purchases)</div>
+    <table>
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Supplier</th>
+                <th>Medicine</th>
+                <th class="text-right">Amount</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for p in purchases %}
+            <tr>
+                <td>{{ p.order_date.strftime('%d-%m-%Y') }}</td>
+                <td>{{ p.supplier.name }}</td>
+                <td>{{ p.medicine.name }}</td>
+                <td class="text-right red">₹{{ "{:,.2f}".format(p.total_amount) }}</td>
+            </tr>
+            {% endfor %}
+            {% if not purchases %}
+            <tr><td colspan="4" style="text-align:center;">No purchases recorded</td></tr>
+            {% endif %}
+        </tbody>
+    </table>
+
+    <div class="summary-box">
+        <table>
+            <tr>
+                <td><strong>Total Revenue (Credit):</strong></td>
+                <td class="text-right green">₹{{ "{:,.2f}".format(total_credit) }}</td>
+            </tr>
+            <tr>
+                <td><strong>Total Expenses (Debit):</strong></td>
+                <td class="text-right red">₹{{ "{:,.2f}".format(total_debit) }}</td>
+            </tr>
+            <tr>
+                <td style="border-top: 2px solid #333; padding-top: 10px;"><strong>NET BALANCE:</strong></td>
+                <td class="text-right {% if net_balance >= 0 %}green{% else %}red{% endif %}" style="border-top: 2px solid #333; padding-top: 10px; font-size: 14pt;">
+                    ₹{{ "{:,.2f}".format(net_balance) }}
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <div style="margin-top: 50px; font-size: 8pt; text-align: center; color: #999;">
+        Generated on {{ now.strftime('%d %b %Y at %I:%M %p') }} | PharmaSync Inventory Management
+    </div>
+</body>
+</html>

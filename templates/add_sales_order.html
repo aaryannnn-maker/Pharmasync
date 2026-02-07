@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>New Sale - PharmaSync</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+</head>
+<body class="bg-background">
+    {% include 'header.html' %}
+    <main class="max-w-2xl mx-auto py-10">
+        <div class="card p-8">
+            <h2 class="text-2xl font-bold mb-6 text-text-primary">Create Sales Order</h2>
+            <form method="POST" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium mb-1">Select Medicine</label>
+                    <select name="medicine_id" class="input w-full" required>
+                        {% for med in medicines %}
+                        <option value="{{ med.id }}">{{ med.name }} — ₹{{ med.price }} (Stock: {{ med.quantity }})</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Quantity</label>
+                        <input type="number" name="quantity" min="1" required class="input w-full">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Customer Name</label>
+                        <input type="text" name="customer_name" class="input w-full" placeholder="Optional">
+                    </div>
+                </div>
+                <div class="pt-4 flex gap-3">
+                    <button type="submit" class="btn btn-primary bg-success text-white flex-1 py-3 font-bold">Confirm Sale</button>
+                    <a href="{{ url_for('sales_orders') }}" class="btn bg-gray-200 flex-1 py-3 text-center">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </main>
+</body>
+</html>

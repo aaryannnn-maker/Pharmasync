@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Medicine - PharmaSync</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+</head>
+<body class="bg-background min-h-screen">
+    {% include 'header.html' %}
+
+    <!-- Main Content -->
+    <main class="max-w-4xl mx-auto px-6 py-6 space-y-6">
+        <!-- Page Header -->
+        <div>
+            <h2 class="text-3xl font-heading font-bold text-text-primary">Add New Medicine</h2>
+            <p class="text-text-secondary mt-1">Enter medicine details to add to inventory</p>
+        </div>
+
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="{% if category == 'error' %}bg-error-50 border-error-200 text-error-700{% else %}bg-success-50 border-success-200 text-success-700{% endif %} border rounded-lg p-4">
+                        <p class="text-sm font-medium">{{ message }}</p>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <!-- Form Card -->
+        <div class="card">
+            <form method="POST" action="{{ url_for('add_medicine') }}" class="space-y-6">
+                <!-- Basic Information -->
+                <div>
+                    <h3 class="text-xl font-heading font-semibold text-text-primary mb-4">Basic Information</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="name" class="block text-sm font-medium text-text-primary mb-2">
+                                Medicine Name <span class="text-error">*</span>
+                            </label>
+                            <input 
+                                type="text" 
+                                id="name" 
+                                name="name"
+                                class="input w-full" 
+                                required
+                                placeholder="e.g., Paracetamol 500mg"
+                            >
+                        </div>
+
+                        <div>
+                            <label for="generic_name" class="block text-sm font-medium text-text-primary mb-2">
+                                Generic Name
+                            </label>
+                            <input 
+                                type="text" 
+                                id="generic_name" 
+                                name="generic_name"
+                                class="input w-full" 
+                                placeholder="e.g., Acetaminophen"
+                            >
+                        </div>
+
+                        <div>
+                            <label for="category" class="block text-sm font-medium text-text-primary mb-2">
+                                Category <span class="text-error">*</span>
+                            </label>
+                            <select id="category" name="category" class="input w-full" required>
+                                <option value="">Select Category</option>
+                                <option value="Allopathy">Allopathy</option>
+                                <option value="Ayurveda">Ayurveda</option>
+                                <option value="Homeopathy">Homeopathy</option>
+                                <option value="Unani">Unani</option>
+                                <option value="Siddha">Siddha</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label for="manufacturer" class="block text-sm font-medium text-text-primary mb-2">
+                                Manufacturer <span class="text-error">*</span>
+                            </label>
+                            <input 
+                                type="text" 
+                                id="manufacturer" 
+                                name="manufacturer"
+                                class="input w-full" 
+                                required
+                                placeholder="e.g., Cipla Ltd."
+                            >
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Stock & Pricing -->
+                <div>
+                    <h3 class="text-xl font-heading font-semibold text-text-primary mb-4">Stock & Pricing</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                            <label for="quantity" class="block text-sm font-medium text-text-primary mb-2">
+                                Quantity <span class="text-error">*</span>
+                            </label>
+                            <input 
+                                type="number" 
+                                id="quantity" 
+                                name="quantity"
+                                class="input w-full" 
+                                required
+                                min="0"
+                                placeholder="0"
+                            >
+                        </div>
+
+                        <div>
+                            <label for="price" class="block text-sm font-medium text-text-primary mb-2">
+                                Unit Price (₹) <span class="text-error">*</span>
+                            </label>
+                            <input 
+                                type="number" 
+                                id="price" 
+                                name="price"
+                                class="input w-full" 
+                                required
+                                step="0.01"
+                                min="0"
+                                placeholder="0.00"
+                            >
+                        </div>
+
+                        <div>
+                            <label for="reorder_level" class="block text-sm font-medium text-text-primary mb-2">
+                                Reorder Level
+                            </label>
+                            <input 
+                                type="number" 
+                                id="reorder_level" 
+                                name="reorder_level"
+                                class="input w-full" 
+                                min="0"
+                                value="10"
+                                placeholder="10"
+                            >
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Additional Details -->
+                <div>
+                    <h3 class="text-xl font-heading font-semibold text-text-primary mb-4">Additional Details</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                            <label for="batch_number" class="block text-sm font-medium text-text-primary mb-2">
+                                Batch Number
+                            </label>
+                            <input 
+                                type="text" 
+                                id="batch_number" 
+                                name="batch_number"
+                                class="input w-full" 
+                                placeholder="e.g., BAT2025001"
+                            >
+                        </div>
+
+                        <div>
+                            <label for="expiry_date" class="block text-sm font-medium text-text-primary mb-2">
+                                Expiry Date
+                            </label>
+                            <input 
+                                type="date" 
+                                id="expiry_date" 
+                                name="expiry_date"
+                                class="input w-full"
+                            >
+                        </div>
+
+                        <div>
+                            <label for="location" class="block text-sm font-medium text-text-primary mb-2">
+                                Storage Location
+                            </label>
+                            <input 
+                                type="text" 
+                                id="location" 
+                                name="location"
+                                class="input w-full" 
+                                placeholder="e.g., Shelf A-12"
+                            >
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Description -->
+                <div>
+                    <label for="description" class="block text-sm font-medium text-text-primary mb-2">
+                        Description
+                    </label>
+                    <textarea 
+                        id="description" 
+                        name="description"
+                        class="input w-full" 
+                        rows="4"
+                        placeholder="Enter medicine description, usage instructions, or additional notes..."
+                    ></textarea>
+                </div>
+
+                <!-- Actions -->
+                <div class="flex gap-3 pt-4">
+                    <button type="submit" class="btn btn-primary flex-1 sm:flex-none">
+                        Add Medicine
+                    </button>
+                    <a href="{{ url_for('inventory') }}" class="btn bg-gray-200 text-gray-700 hover:bg-gray-300 flex-1 sm:flex-none">
+                        Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    {% include 'footer.html' %}
+</body>
+</html>

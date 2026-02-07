@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Sales Orders - PharmaSync</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+</head>
+<body class="bg-background">
+    {% include 'header.html' %}
+    <main class="max-w-[1920px] mx-auto px-6 py-6 space-y-6">
+        
+        <div class="flex justify-between items-center border-b pb-6">
+            <div>
+                <h2 class="text-3xl font-heading font-bold text-text-primary">Sales Orders</h2>
+                <p class="text-text-secondary mt-1">Record new sales and view transaction history</p>
+            </div>
+            <a href="{{ url_for('new_sales_order') }}" class="btn btn-primary bg-success text-white px-6 py-3 rounded-lg shadow-md font-bold">
+                + New Sales Order
+            </a>
+        </div>
+
+        <div class="card bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+            <table class="w-full text-left">
+                <thead>
+                    <tr class="bg-gray-50 border-b">
+                        <th class="px-6 py-4">Date</th>
+                        <th class="px-6 py-4">Medicine</th>
+                        <th class="px-6 py-4 text-center">Qty</th>
+                        <th class="px-6 py-4">Unit Price</th>
+                        <th class="px-6 py-4 text-right">Total Amount</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y">
+                    {% if sales %}
+                        {% for sale in sales %}
+                        <tr>
+                            <td class="px-6 py-4 text-sm text-text-secondary">{{ sale.sale_date.strftime('%d %b, %H:%M') }}</td>
+                            <td class="px-6 py-4 font-medium text-text-primary">{{ sale.medicine.name }}</td>
+                            <td class="px-6 py-4 text-center">{{ sale.quantity }}</td>
+                            <td class="px-6 py-4">₹{{ "{:,.2f}".format(sale.unit_price) }}</td>
+                            <td class="px-6 py-4 text-right font-bold text-success">₹{{ "{:,.2f}".format(sale.total_amount) }}</td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr><td colspan="5" class="px-6 py-10 text-center text-text-tertiary">No sales orders found.</td></tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </main>
+    {% include 'footer.html' %}
+</body>
+</html>

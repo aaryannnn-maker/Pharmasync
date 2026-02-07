@@ -1,0 +1,21 @@
+<header class="bg-white border-b border-gray-200">
+    <div class="max-w-[1920px] mx-auto px-6 py-4 flex items-center justify-between">
+        <div class="flex items-center gap-8">
+            <h1 class="text-2xl font-heading font-bold text-text-primary">PharmaSync   </h1>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <nav class="hidden md:flex items-center gap-6">
+                <a href="{{ url_for('dashboard') }}" class="text-text-secondary hover:text-text-primary font-medium">Dashboard</a>
+                <a href="{{ url_for('inventory') }}" class="text-text-primary font-bold border-b-2 border-primary-500">Inventory</a>
+                <a href="{{ url_for('purchase_orders') }}" class="text-text-secondary hover:text-text-primary font-medium">Orders</a>
+                <a href="{{ url_for('sales_orders') }}" class="text-text-secondary hover:text-text-primary font-medium">Sales</a>
+                <a href="{{ url_for('suppliers') }}" class="text-text-secondary hover:text-text-primary font-medium">Suppliers</a>
+                <a href="{{ url_for('reports') }}" class="text-text-secondary hover:text-text-primary font-medium">Reports</a>
+            </nav>
+        </div>
+        
+        <div class="flex items-center gap-4">
+            <span class="text-sm text-text-secondary">Welcome, <span class="font-semibold text-text-primary">{{ session['username'] }}</span></span>
+            <a href="{{ url_for('logout') }}" class="text-sm text-error hover:underline">Logout</a>
+        </div>
+    </div>
+</header>

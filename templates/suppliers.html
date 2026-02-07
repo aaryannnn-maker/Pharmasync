@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Suppliers - PharmaSync</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+</head>
+<body class="bg-background min-h-screen">
+    {% include 'header.html' %}
+
+    <main class="max-w-[1920px] mx-auto px-6 py-6 space-y-6">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div>
+                <h2 class="text-3xl font-heading font-bold text-text-primary">Suppliers</h2>
+                <p class="text-text-secondary mt-1">Manage your supply chain partners</p>
+            </div>
+            <button onclick="alert('Open your Add Supplier form/modal here')" class="btn btn-primary shadow-mint-md font-bold">
+                + Add New Supplier
+            </button>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {% if suppliers %}
+                {% for supplier in suppliers %}
+                <div class="card p-6 border border-gray-100 hover:shadow-md transition-all">
+                    <h3 class="text-xl font-bold text-text-primary mb-4">{{ supplier.name }}</h3>
+                    <div class="space-y-2 text-sm">
+                        <p class="text-text-secondary"><strong>Contact:</strong> {{ supplier.contact_person }}</p>
+                        <p class="text-text-secondary"><strong>Email:</strong> {{ supplier.email }}</p>
+                        <p class="text-text-secondary"><strong>Phone:</strong> {{ supplier.phone }}</p>
+                        <p class="text-text-secondary mt-3"><strong>Address:</strong><br>{{ supplier.address }}</p>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="col-span-full text-center py-20 card">
+                    <p class="text-text-tertiary">No suppliers registered yet.</p>
+                </div>
+            {% endif %}
+        </div>
+    </main>
+
+    {% include 'footer.html' %}
+</body>
+</html>
