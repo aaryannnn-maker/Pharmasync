@@ -3,3 +3,4 @@ Flask-SQLAlchemy
 Werkzeug
 pdfkit
 xhtml2pdf
+gunicorn
