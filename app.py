@@ -441,26 +441,36 @@ def suppliers():
     suppliers = Supplier.query.all()
     return render_template('suppliers.html', suppliers=suppliers)
 
-@app.route('/supplier/add', methods=['POST'])
+@app.route('/suppliers')
+@login_required
+def suppliers():
+    suppliers = Supplier.query.all()
+    return render_template('suppliers.html', suppliers=suppliers)
+
+@app.route('/suppliers/add', methods=['GET', 'POST'])
 @login_required
 def add_supplier():
-    try:
-        supplier = Supplier(
-            name=request.form.get('name'),
-            contact_person=request.form.get('contact_person'),
-            email=request.form.get('email'),
-            phone=request.form.get('phone'),
-            address=request.form.get('address')
+    if request.method == 'POST':
+        name = request.form.get('name')
+        contact = request.form.get('contact_person')
+        phone = request.form.get('phone')
+        email = request.form.get('email')
+        address = request.form.get('address')
+        
+        new_supplier = Supplier(
+            name=name,
+            contact_person=contact,
+            phone=phone,
+            email=email,
+            address=address
         )
         
-        db.session.add(supplier)
+        db.session.add(new_supplier)
         db.session.commit()
-        
         flash('Supplier added successfully!', 'success')
-    except Exception as e:
-        flash(f'Error adding supplier: {str(e)}', 'error')
-    
-    return redirect(url_for('suppliers'))
+        return redirect(url_for('suppliers'))
+        
+    return render_template('add_supplier.html')
 @app.route('/reports')
 @login_required
 def reports():
