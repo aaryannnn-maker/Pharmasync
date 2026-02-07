@@ -441,12 +441,6 @@ def suppliers():
     suppliers = Supplier.query.all()
     return render_template('suppliers.html', suppliers=suppliers)
 
-@app.route('/suppliers')
-@login_required
-def suppliers():
-    suppliers = Supplier.query.all()
-    return render_template('suppliers.html', suppliers=suppliers)
-
 @app.route('/suppliers/add', methods=['GET', 'POST'])
 @login_required
 def add_supplier():
