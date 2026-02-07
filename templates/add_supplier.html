@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Add Supplier - PharmaSync</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+</head>
+<body class="bg-background">
+    {% include 'header.html' %}
+    <main class="max-w-2xl mx-auto py-10 px-6">
+        <div class="card p-8 bg-white shadow-sm border border-border">
+            <h2 class="text-2xl font-heading font-bold text-text-primary mb-6">Register New Supplier</h2>
+            
+            <form action="{{ url_for('add_supplier') }}" method="POST" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium mb-1">Supplier Name</label>
+                    <input type="text" name="name" required class="input w-full p-2 border rounded" placeholder="e.g. Cipla Ltd">
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Contact Person</label>
+                        <input type="text" name="contact_person" class="input w-full p-2 border rounded">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Phone Number</label>
+                        <input type="text" name="phone" required class="input w-full p-2 border rounded">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-1">Email Address</label>
+                    <input type="email" name="email" class="input w-full p-2 border rounded">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-1">Office Address</label>
+                    <textarea name="address" class="input w-full p-2 border rounded" rows="3"></textarea>
+                </div>
+                
+                <div class="pt-4 flex gap-3">
+                    <button type="submit" class="btn btn-primary bg-primary text-white flex-1 py-3 font-bold rounded">Save Supplier</button>
+                    <a href="{{ url_for('suppliers') }}" class="btn bg-gray-200 flex-1 py-3 text-center rounded">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </main>
+</body>
+</html>
