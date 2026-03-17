@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reports & Analytics - PharmaSync</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+</head>
+<body class="bg-background min-h-screen">
+    {% include 'header.html' %}
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-6 py-6 space-y-6">
+        <!-- Page Header -->
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div>
+                <h2 class="text-3xl font-heading font-bold text-text-primary">Reports & Analytics</h2>
+                <p class="text-text-secondary mt-1">Business insights and performance metrics</p>
+            </div>
+        </div>
+
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="{% if category == 'error' %}bg-error-50 border-error-200 text-error-700{% else %}bg-success-50 border-success-200 text-success-700{% endif %} border rounded-lg p-4">
+                        <p class="text-sm font-medium">{{ message }}</p>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <!-- Date Range Filter -->
+        <div class="card">
+            <h3 class="text-lg font-heading font-semibold text-text-primary mb-4">Date Range</h3>
+            <form method="GET" action="{{ url_for('reports') }}" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-text-primary mb-2">Start Date</label>
+                    <input 
+                        type="date" 
+                        name="start_date" 
+                        class="input w-full" 
+                        value="{{ start_date }}"
+                    >
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-text-primary mb-2">End Date</label>
+                    <input 
+                        type="date" 
+                        name="end_date" 
+                        class="input w-full" 
+                        value="{{ end_date }}"
+                    >
+                </div>
+                <div class="flex items-end">
+                    <button type="submit" class="btn btn-primary w-full">
+                        Apply Filter
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Summary Cards -->
+        <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <!-- Total Sales -->
+            <div class="card">
+                <div class="flex items-start justify-between">
+                    <div class="flex-1">
+                        <p class="text-text-tertiary text-sm font-medium mb-1">Total Sales</p>
+                        <p class="text-3xl font-heading font-bold text-success mb-2">₹{{ "%.2f"|format(total_sales) }}</p>
+                        <p class="text-sm text-text-tertiary">{{ sales_count }} transactions</p>
+                    </div>
+                    <div class="flex items-center justify-center w-12 h-12 bg-success-50 rounded-xl">
+                        <svg class="w-7 h-7 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Total Purchases -->
+            <div class="card">
+                <div class="flex items-start justify-between">
+                    <div class="flex-1">
+                        <p class="text-text-tertiary text-sm font-medium mb-1">Total Purchases</p>
+                        <p class="text-3xl font-heading font-bold text-warning mb-2">₹{{ "%.2f"|format(total_purchases) }}</p>
+                        <p class="text-sm text-text-tertiary">Stock procurement</p>
+                    </div>
+                    <div class="flex items-center justify-center w-12 h-12 bg-warning-50 rounded-xl">
+                        <svg class="w-7 h-7 text-warning" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stock Value -->
+            <div class="card">
+                <div class="flex items-start justify-between">
+                    <div class="flex-1">
+                        <p class="text-text-tertiary text-sm font-medium mb-1">Stock Value</p>
+                        <p class="text-3xl font-heading font-bold text-primary mb-2">₹{{ "%.2f"|format(stock_value) }}</p>
+                        <p class="text-sm text-text-tertiary">Current inventory</p>
+                    </div>
+                    <div class="flex items-center justify-center w-12 h-12 bg-primary-50 rounded-xl">
+                        <svg class="w-7 h-7 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Profit Margin -->
+            <div class="card">
+                <div class="flex items-start justify-between">
+                    <div class="flex-1">
+                        <p class="text-text-tertiary text-sm font-medium mb-1">Net Profit</p>
+                        <p class="text-3xl font-heading font-bold text-success mb-2">₹{{ "%.2f"|format(total_sales - total_purchases) }}</p>
+                        <p class="text-sm text-text-tertiary">Revenue - Purchases</p>
+                    </div>
+                    <div class="flex items-center justify-center w-12 h-12 bg-success-50 rounded-xl">
+                        <svg class="w-7 h-7 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Top Selling Medicines -->
+        <div class="card">
+            <h3 class="text-xl font-heading font-semibold text-text-primary mb-6">Top Selling Medicines</h3>
+            <div class="overflow-x-auto">
+                <table class="table">
+                    <thead>
+                        <tr class="bg-background">
+                            <th class="text-left font-semibold text-text-primary">Rank</th>
+                            <th class="text-left font-semibold text-text-primary">Medicine Name</th>
+                            <th class="text-center font-semibold text-text-primary">Units Sold</th>
+                            <th class="text-left font-semibold text-text-primary">Revenue</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if top_medicines %}
+                            {% for medicine in top_medicines %}
+                            <tr class="hover:bg-primary-50">
+                                <td class="font-bold text-primary">#{{ loop.index }}</td>
+                                <td class="font-medium text-text-primary">{{ medicine[0] }}</td>
+                                <td class="text-center font-semibold text-success">{{ medicine[1] }}</td>
+                                <td class="font-medium text-text-primary">₹{{ "%.2f"|format(medicine[2]) }}</td>
+                            </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td colspan="4" class="text-center py-12 text-text-tertiary">
+                                    No sales data available for the selected period
+                                </td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Period Summary -->
+        <div class="card">
+            <h3 class="text-xl font-heading font-semibold text-text-primary mb-6">Period Summary</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <h4 class="text-lg font-heading font-semibold text-text-primary mb-4">Sales Performance</h4>
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-center p-3 bg-background rounded-lg">
+                            <span class="text-text-secondary">Number of Transactions</span>
+                            <span class="font-semibold text-text-primary">{{ sales_count }}</span>
+                        </div>
+                        <div class="flex justify-between items-center p-3 bg-background rounded-lg">
+                            <span class="text-text-secondary">Total Revenue</span>
+                            <span class="font-semibold text-success">₹{{ "%.2f"|format(total_sales) }}</span>
+                        </div>
+                        <div class="flex justify-between items-center p-3 bg-background rounded-lg">
+                            <span class="text-text-secondary">Average Transaction</span>
+                            <span class="font-semibold text-text-primary">₹{{ "%.2f"|format(total_sales / sales_count if sales_count > 0 else 0) }}</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-heading font-semibold text-text-primary mb-4">Inventory Insights</h4>
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-center p-3 bg-background rounded-lg">
+                            <span class="text-text-secondary">Current Stock Value</span>
+                            <span class="font-semibold text-primary">₹{{ "%.2f"|format(stock_value) }}</span>
+                        </div>
+                        <div class="flex justify-between items-center p-3 bg-background rounded-lg">
+                            <span class="text-text-secondary">Total Purchases</span>
+                            <span class="font-semibold text-warning">₹{{ "%.2f"|format(total_purchases) }}</span>
+                        </div>
+                        <div class="flex justify-between items-center p-3 bg-background rounded-lg">
+                            <span class="text-text-secondary">Net Profit</span>
+                            <span class="font-semibold text-success">₹{{ "%.2f"|format(total_sales - total_purchases) }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    {% include 'footer.html' %}
+</body>
+</html>

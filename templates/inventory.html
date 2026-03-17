@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medicine Inventory - PharmaSync</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+</head>
+<body class="bg-background min-h-screen">
+    
+    {% include 'header.html' %}
+
+    <main class="max-w-[1920px] mx-auto px-6 py-6 space-y-6">
+        
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div>
+                <h2 class="text-3xl font-heading font-bold text-text-primary">Medicine Inventory</h2>
+                <p class="text-text-secondary mt-1">Manage and track all pharmaceutical products</p>
+            </div>
+            <a href="{{ url_for('add_medicine') }}" class="btn btn-primary bg-blue-600 text-white px-6 py-3 rounded-lg shadow-md font-bold hover:bg-blue-700">
+                + Add Medicine
+            </a>
+        </div>
+
+        <div class="card bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
+            <form method="GET" action="{{ url_for('inventory') }}" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+                <div class="lg:col-span-2">
+                    <label class="block text-sm font-medium mb-2">Search</label>
+                    <input type="text" name="search" value="{{ search or '' }}" class="input w-full border p-2 rounded" placeholder="Search name or manufacturer...">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-2">Category</label>
+                    <select name="category" class="input w-full border p-2 rounded">
+                        <option value="all">All Categories</option>
+                        {% for cat in categories %}
+                        <option value="{{ cat }}" {% if selected_category == cat %}selected{% endif %}>{{ cat }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="flex items-end">
+                    <button type="submit" class="w-full bg-gray-800 text-white py-2 rounded font-bold">Apply Filter</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="card bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left">
+                    <thead>
+                        <tr class="bg-gray-50 border-b border-gray-100">
+                            <th class="px-6 py-4 font-bold text-gray-700">Medicine Name</th>
+                            <th class="px-6 py-4 font-bold text-gray-700">Category</th>
+                            <th class="px-6 py-4 font-bold text-gray-700 text-center">Quantity</th>
+                            <th class="px-6 py-4 font-bold text-gray-700">Price</th>
+                            <th class="px-6 py-4 font-bold text-gray-700">Expiry</th>
+                            <th class="px-6 py-4 font-bold text-gray-700 text-center">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-100">
+                        {% if medicines %}
+                            {% for medicine in medicines %}
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-6 py-4">
+                                    <div class="font-bold text-text-primary">{{ medicine.name }}</div>
+                                    <div class="text-xs text-gray-400">{{ medicine.manufacturer }}</div>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <span class="bg-blue-50 text-blue-600 px-2 py-1 rounded-full text-xs font-bold">{{ medicine.category }}</span>
+                                </td>
+                                <td class="px-6 py-4 text-center font-bold">
+                                    {{ medicine.quantity }}
+                                </td>
+                                <td class="px-6 py-4">₹{{ "%.2f"|format(medicine.price) }}</td>
+                                <td class="px-6 py-4 text-sm">
+                                    {{ medicine.expiry_date.strftime('%d %b %Y') if medicine.expiry_date else '-' }}
+                                </td>
+                                <td class="px-6 py-4 text-center">
+                                    <a href="{{ url_for('edit_medicine', id=medicine.id) }}" class="text-blue-600 font-medium hover:underline">Edit</a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td colspan="6" class="px-6 py-20 text-center text-gray-400">
+                                    No medicines found in the system.
+                                </td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    {% include 'footer.html' %}
+</body>
+</html>

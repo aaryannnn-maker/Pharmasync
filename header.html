@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medicine Inventory - PharmaSync</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+</head>
+<body class="bg-background min-h-screen">
+    {% include 'header.html' %}
+
+    <!-- Main Content -->
+    <main class="max-w-[1920px] mx-auto px-6 py-6 space-y-6">
+        <!-- Page Header -->
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div>
+                <h2 class="text-3xl font-heading font-bold text-text-primary">Medicine Inventory</h2>
+                <p class="text-text-secondary mt-1">Manage and track all pharmaceutical products</p>
+            </div>
+            <a href="{{ url_for('add_medicine') }}" class="btn btn-primary shadow-mint-md hover:shadow-mint-lg">
+                + Add Medicine
+            </a>
+        </div>
+
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="{% if category == 'error' %}bg-error-50 border-error-200 text-error-700{% else %}bg-success-50 border-success-200 text-success-700{% endif %} border rounded-lg p-4">
+                        <p class="text-sm font-medium">{{ message }}</p>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <!-- Filters Card -->
+        <div class="card">
+            <form method="GET" action="{{ url_for('inventory') }}" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+                <!-- Search -->
+                <div class="lg:col-span-2">
+                    <label class="block text-sm font-medium text-text-primary mb-2">Search</label>
+                    <input 
+                        type="text" 
+                        name="search" 
+                        value="{{ search }}"
+                        class="input w-full" 
+                        placeholder="Search by name, generic name, or manufacturer"
+                    >
+                </div>
+
+                <!-- Category Filter -->
+                <div>
+                    <label class="block text-sm font-medium text-text-primary mb-2">Category</label>
+                    <select name="category" class="input w-full">
+                        <option value="all" {% if selected_category == '' %}selected{% endif %}>All Categories</option>
+                        {% for cat in categories %}
+                        <option value="{{ cat }}" {% if selected_category == cat %}selected{% endif %}>{{ cat }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Stock Status -->
+                <div>
+                    <label class="block text-sm font-medium text-text-primary mb-2">Stock Status</label>
+                    <select name="stock" class="input w-full">
+                        <option value="" {% if stock_status == '' %}selected{% endif %}>All Stock</option>
+                        <option value="low" {% if stock_status == 'low' %}selected{% endif %}>Low Stock</option>
+                        <option value="out" {% if stock_status == 'out' %}selected{% endif %}>Out of Stock</option>
+                        <option value="expired" {% if stock_status == 'expired' %}selected{% endif %}>Expired</option>
+                    </select>
+                </div>
+
+                <!-- Sort -->
+                <div>
+                    <label class="block text-sm font-medium text-text-primary mb-2">Sort By</label>
+                    <select name="sort" class="input w-full" onchange="this.form.submit()">
+                        <option value="name" {% if sort == 'name' %}selected{% endif %}>Name</option>
+                        <option value="quantity" {% if sort == 'quantity' %}selected{% endif %}>Quantity</option>
+                        <option value="expiry" {% if sort == 'expiry' %}selected{% endif %}>Expiry Date</option>
+                        <option value="price" {% if sort == 'price' %}selected{% endif %}>Price</option>
+                    </select>
+                </div>
+            </form>
+        </div>
+
+        <!-- Medicine Table -->
+        <div class="card overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="table">
+                    <thead>
+                        <tr class="bg-background">
+                            <th class="text-left font-semibold text-text-primary">Medicine Name</th>
+                            <th class="text-left font-semibold text-text-primary hidden md:table-cell">Generic Name</th>
+                            <th class="text-left font-semibold text-text-primary">Category</th>
+                            <th class="text-center font-semibold text-text-primary">Quantity</th>
+                            <th class="text-left font-semibold text-text-primary">Price</th>
+                            <th class="text-left font-semibold text-text-primary hidden lg:table-cell">Expiry</th>
+                            <th class="text-center font-semibold text-text-primary">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if medicines %}
+                            {% for medicine in medicines %}
+                            <tr class="hover:bg-primary-50">
+                                <td>
+                                    <div>
+                                        <p class="font-medium text-text-primary">{{ medicine.name }}</p>
+                                        <p class="text-xs text-text-tertiary">{{ medicine.manufacturer }}</p>
+                                    </div>
+                                </td>
+                                <td class="hidden md:table-cell text-text-secondary">{{ medicine.generic_name or '-' }}</td>
+                                <td>
+                                    <span class="badge badge-success">{{ medicine.category }}</span>
+                                </td>
+                                <td class="text-center">
+                                    <span class="font-semibold {% if medicine.quantity <= medicine.reorder_level %}text-warning{% elif medicine.quantity == 0 %}text-error{% else %}text-success{% endif %}">
+                                        {{ medicine.quantity }}
+                                    </span>
+                                </td>
+                                <td class="font-medium text-text-primary">₹{{ "%.2f"|format(medicine.price) }}</td>
+                                <td class="hidden lg:table-cell">
+                                    {% if medicine.expiry_date %}
+                                        <span class="text-sm {% if medicine.expiry_date < now.date() %}text-error{% elif (medicine.expiry_date - now.date()).days < 30 %}text-warning{% else %}text-text-secondary{% endif %}">
+                                            {{ medicine.expiry_date.strftime('%d %b %Y') }}
+                                        </span>
+                                    {% else %}
+                                        <span class="text-text-tertiary">-</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-center">
+                                    <div class="flex items-center justify-center gap-2">
+                                        <a href="{{ url_for('medicine_details', id=medicine.id) }}" class="btn btn-secondary text-xs px-3 py-1">
+                                            View
+                                        </a>
+                                        <a href="{{ url_for('edit_medicine', id=medicine.id) }}" class="btn btn-accent text-xs px-3 py-1">
+                                            Edit
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td colspan="7" class="text-center py-12 text-text-tertiary">
+                                    No medicines found. <a href="{{ url_for('add_medicine') }}" class="text-primary font-medium">Add your first medicine</a>
+                                </td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    {% include 'footer.html' %}
+</body>
+</html>

@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - PharmaSync</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+</head>
+<body class="bg-background min-h-screen">
+    <!-- Navigation Header -->
+    <header class="bg-surface border-b border-border sticky top-0 z-navigation shadow-mint-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <!-- Logo and Brand -->
+                <div class="flex items-center gap-3">
+                    <div class="flex items-center justify-center w-10 h-10 bg-primary rounded-xl">
+                        <svg class="w-6 h-6 text-primary-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <h1 class="text-lg font-heading font-bold text-text-primary">PharmaSync</h1>
+                        <p class="text-xs text-text-tertiary hidden sm:block">Inventory Management</p>
+                    </div>
+                </div>
+
+                <!-- Desktop Navigation -->
+                <nav class="hidden md:flex items-center gap-1">
+                    <a href="{{ url_for('dashboard') }}" class="px-4 py-2 rounded-lg bg-primary-50 text-primary font-medium text-sm transition-smooth">
+                        Dashboard
+                    </a>
+                    <a href="{{ url_for('inventory') }}" class="px-4 py-2 rounded-lg text-text-secondary hover:bg-surface-50 hover:text-text-primary font-medium text-sm transition-smooth">
+                        Inventory
+                    </a>
+                    <a href="{{ url_for('purchase_orders') }}" class="px-4 py-2 rounded-lg text-text-secondary hover:bg-surface-50 hover:text-text-primary font-medium text-sm transition-smooth">
+                        Purchase Orders
+                    </a>
+                    <a href="{{ url_for('reports') }}" class="px-4 py-2 rounded-lg text-text-secondary hover:bg-surface-50 hover:text-text-primary font-medium text-sm transition-smooth">
+                        Reports
+                    </a>
+                </nav>
+
+                <!-- User Profile & Logout -->
+                <div class="flex items-center gap-3">
+                    <div class="hidden sm:block text-right">
+                        <p class="text-sm font-medium text-text-primary">{{ session.username }}</p>
+                        <p class="text-xs text-text-tertiary">{{ session.email }}</p>
+                    </div>
+                    <a href="{{ url_for('logout') }}" class="btn btn-primary text-xs px-4 py-2">
+                        Logout
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Navigation -->
+        <nav class="md:hidden border-t border-border bg-surface">
+            <div class="flex items-center justify-around py-2">
+                <a href="{{ url_for('dashboard') }}" class="flex flex-col items-center gap-1 px-3 py-2 text-primary">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                    </svg>
+                    <span class="text-xs font-medium">Dashboard</span>
+                </a>
+                <a href="{{ url_for('inventory') }}" class="flex flex-col items-center gap-1 px-3 py-2 text-text-tertiary">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+                    </svg>
+                    <span class="text-xs font-medium">Inventory</span>
+                </a>
+                <a href="{{ url_for('purchase_orders') }}" class="flex flex-col items-center gap-1 px-3 py-2 text-text-tertiary">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                    </svg>
+                    <span class="text-xs font-medium">Orders</span>
+                </a>
+                <a href="{{ url_for('reports') }}" class="flex flex-col items-center gap-1 px-3 py-2 text-text-tertiary">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                    </svg>
+                    <span class="text-xs font-medium">Reports</span>
+                </a>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+        <!-- Page Header -->
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div>
+                <h2 class="text-3xl font-heading font-bold text-text-primary">Dashboard Overview</h2>
+                <p class="text-text-secondary mt-1">Real-time pharmacy inventory insights and metrics</p>
+            </div>
+            <div class="flex items-center gap-2 text-sm text-text-tertiary">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                <span>Last updated: {{ now.strftime('%d %b %Y, %I:%M %p') }}</span>
+            </div>
+        </div>
+
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="{% if category == 'error' %}bg-error-50 border-error-200 text-error-700{% else %}bg-success-50 border-success-200 text-success-700{% endif %} border rounded-lg p-4">
+                        <p class="text-sm font-medium">{{ message }}</p>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <!-- Key Metrics Cards -->
+        <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div class="card p-6 flex flex-col justify-between min-h-[160px]">
+                <div class="flex items-start justify-between gap-2">
+                    <div class="flex-1">
+                        <p class="text-text-tertiary text-sm font-medium mb-1">Total Medicines</p>
+                        <p class="text-3xl font-heading font-bold text-text-primary">{{ total_medicines }}</p>
+                    </div>
+                    <div class="flex-shrink-0 flex items-center justify-center w-12 h-12 bg-primary-50 rounded-xl">
+                        <svg class="w-7 h-7 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/>
+                        </svg>
+                    </div>
+                </div>
+                <div class="text-success text-sm font-medium mt-2">Active Stock</div>
+            </div>
+
+            <div class="card p-6 flex flex-col justify-between min-h-[160px] border-l-4 border-warning">
+                <div class="flex items-start justify-between gap-2">
+                    <div class="flex-1">
+                        <p class="text-text-tertiary text-sm font-medium mb-1">Low Stock Alerts</p>
+                        <p class="text-3xl font-heading font-bold text-warning">{{ low_stock_count }}</p>
+                    </div>
+                    <div class="flex-shrink-0 flex items-center justify-center w-12 h-12 bg-warning-50 rounded-xl">
+                        <svg class="w-7 h-7 text-warning" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                        </svg>
+                    </div>
+                </div>
+                <div class="text-warning text-sm font-medium mt-2">Requires attention</div>
+            </div>
+
+            <div class="card p-6 flex flex-col justify-between min-h-[160px] border-l-4 border-error">
+                <div class="flex items-start justify-between gap-2">
+                    <div class="flex-1">
+                        <p class="text-text-tertiary text-sm font-medium mb-1">Expired Items</p>
+                        <p class="text-3xl font-heading font-bold text-error">{{ expired_count }}</p>
+                    </div>
+                    <div class="flex-shrink-0 flex items-center justify-center w-12 h-12 bg-error-50 rounded-xl">
+                        <svg class="w-7 h-7 text-error" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                    </div>
+                </div>
+                <div class="text-error text-sm font-medium mt-2">Remove from stock</div>
+            </div>
+
+            <div class="card p-6 flex flex-col justify-between min-h-[160px]">
+                <div class="flex items-start justify-between gap-2">
+                    <div class="flex-1">
+                        <p class="text-text-tertiary text-sm font-medium mb-1">Monthly Revenue</p>
+                        <p class="text-3xl font-heading font-bold text-text-primary">₹{{ "{:,.2f}".format(monthly_revenue) }}</p>
+                    </div>
+                    <div class="flex-shrink-0 flex items-center justify-center w-12 h-12 bg-success-50 rounded-xl">
+                        <svg class="w-7 h-7 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                    </div>
+                </div>
+                <div class="text-success text-sm font-medium mt-2">This month</div>
+            </div>
+        </section>
+        <!-- Content Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <!-- Low Stock Medicines -->
+            <section class="card">
+                <div class="flex items-center justify-between mb-6">
+                    <h3 class="text-xl font-heading font-semibold text-text-primary">Low Stock Medicines</h3>
+                    <a href="{{ url_for('inventory', stock='low') }}" class="text-sm text-primary hover:text-primary-600 font-medium">View All →</a>
+                </div>
+                <div class="space-y-4">
+                    {% if low_stock_medicines %}
+                        {% for medicine in low_stock_medicines %}
+                        <div class="flex items-center justify-between p-4 bg-background rounded-lg border border-border">
+                            <div class="flex-1">
+                                <p class="font-medium text-text-primary">{{ medicine.name }}</p>
+                                <p class="text-sm text-text-tertiary">{{ medicine.category }}</p>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-lg font-semibold text-warning">{{ medicine.quantity }}</p>
+                                <p class="text-xs text-text-tertiary">units left</p>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <p class="text-text-tertiary text-center py-8">No low stock items</p>
+                    {% endif %}
+                </div>
+            </section>
+
+            <!-- Expiring Soon -->
+            <section class="card">
+                <div class="flex items-center justify-between mb-6">
+                    <h3 class="text-xl font-heading font-semibold text-text-primary">Expiring Soon</h3>
+                    <a href="{{ url_for('inventory') }}" class="text-sm text-primary hover:text-primary-600 font-medium">View All →</a>
+                </div>
+                <div class="space-y-4">
+                    {% if expiring_soon %}
+                        {% for medicine in expiring_soon %}
+                        <div class="flex items-center justify-between p-4 bg-background rounded-lg border border-border">
+                            <div class="flex-1">
+                                <p class="font-medium text-text-primary">{{ medicine.name }}</p>
+                                <p class="text-sm text-text-tertiary">Batch: {{ medicine.batch_number }}</p>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-sm font-medium text-error">{{ medicine.expiry_date.strftime('%d %b %Y') }}</p>
+                                <p class="text-xs text-text-tertiary">expires</p>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <p class="text-text-tertiary text-center py-8">No medicines expiring soon</p>
+                    {% endif %}
+                </div>
+            </section>
+        </div>
+
+        <!-- Category Distribution -->
+        <section class="card">
+            <h3 class="text-xl font-heading font-semibold text-text-primary mb-6">Category Distribution</h3>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                {% for category, count in categories %}
+                <div class="p-6 bg-background rounded-lg border border-border text-center">
+                    <p class="text-3xl font-heading font-bold text-text-primary mb-2">{{ count }}</p>
+                    <p class="text-sm text-text-tertiary">{{ category }}</p>
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-surface border-t border-border mt-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+            <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+                <p class="text-sm text-text-tertiary">© 2026 PharmaSync. All Rights Reserved.</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

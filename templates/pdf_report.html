@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        @page {
+            size: A4;
+            margin: 1.5cm;
+        }
+
+        body {
+            font-family: Helvetica, sans-serif;
+            color: #333;
+            font-size: 11pt;
+        }
+
+        .header {
+            text-align: center;
+            border-bottom: 2px solid #000;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+        }
+
+        .title {
+            font-size: 22pt;
+            font-weight: bold;
+        }
+
+        .subtitle {
+            font-size: 10pt;
+            color: #555;
+        }
+
+        .summary {
+            margin-bottom: 20px;
+        }
+
+        .summary td {
+            padding: 5px 0;
+        }
+
+        .section-title {
+            font-weight: bold;
+            margin: 20px 0 8px 0;
+            border-bottom: 1px solid #000;
+            padding-bottom: 4px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            border-bottom: 1px solid #000;
+            text-align: left;
+            padding: 6px;
+            font-size: 10pt;
+        }
+
+        td {
+            padding: 6px;
+            font-size: 10pt;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .text-right {
+            text-align: right;
+        }
+
+        .profit {
+            font-weight: bold;
+        }
+
+        .footer {
+            margin-top: 40px;
+            font-size: 8pt;
+            text-align: center;
+            color: #777;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- HEADER -->
+    <div class="header">
+        <div class="title">PharmaSync</div>
+        <div class="subtitle">Financial Report</div>
+        <div>Period: {{ start_date }} to {{ end_date }}</div>
+    </div>
+
+    <!-- SUMMARY -->
+    <div class="summary">
+        <table>
+            <tr>
+                <td><strong>Total Sales:</strong></td>
+                <td class="text-right">₹{{ "{:,.2f}".format(total_credit or 0) }}</td>
+            </tr>
+            <tr>
+                <td><strong>Total Purchases:</strong></td>
+                <td class="text-right">₹{{ "{:,.2f}".format(total_debit or 0) }}</td>
+            </tr>
+            <tr>
+                <td style="border-top: 2px solid #000; padding-top: 6px;">
+                    <strong>Net Balance:</strong>
+                </td>
+                <td class="text-right profit" style="border-top: 2px solid #000; padding-top: 6px;">
+                    ₹{{ "{:,.2f}".format(net_balance or 0) }}
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <!-- SALES -->
+    <div class="section-title">Sales (Credit)</div>
+    <table>
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Medicine</th>
+                <th class="text-right">Qty</th>
+                <th class="text-right">Amount</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% if sales %}
+                {% for sale in sales %}
+                <tr>
+                    <td>{{ sale.sale_date.strftime('%d-%m-%Y') }}</td>
+                    <td>{{ sale.medicine.name }}</td>
+                    <td class="text-right">{{ sale.quantity }}</td>
+                    <td class="text-right">₹{{ "{:,.2f}".format(sale.total_amount or 0) }}</td>
+                </tr>
+                {% endfor %}
+            {% else %}
+                <tr>
+                    <td colspan="4" style="text-align:center;">No sales data</td>
+                </tr>
+            {% endif %}
+        </tbody>
+    </table>
+
+    <!-- PURCHASES -->
+    <div class="section-title">Purchases (Debit)</div>
+    <table>
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Supplier</th>
+                <th>Medicine</th>
+                <th class="text-right">Amount</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% if purchases %}
+                {% for p in purchases %}
+                <tr>
+                    <td>{{ p.order_date.strftime('%d-%m-%Y') }}</td>
+                    <td>{{ p.supplier.name }}</td>
+                    <td>{{ p.medicine.name }}</td>
+                    <td class="text-right">₹{{ "{:,.2f}".format(p.total_amount or 0) }}</td>
+                </tr>
+                {% endfor %}
+            {% else %}
+                <tr>
+                    <td colspan="4" style="text-align:center;">No purchase data</td>
+                </tr>
+            {% endif %}
+        </tbody>
+    </table>
+
+    <!-- FOOTER -->
+    <div class="footer">
+        Generated on {{ now.strftime('%d %b %Y %I:%M %p') }}
+    </div>
+
+</body>
+</html>

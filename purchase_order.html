@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Purchase Orders - PharmaSync</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+</head>
+<body class="bg-background min-h-screen">
+    {% include 'header.html' %}
+
+    <!-- Main Content -->
+    <main class="max-w-[1920px] mx-auto px-6 py-6 space-y-6">
+        <!-- Page Header -->
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div>
+                <h2 class="text-3xl font-heading font-bold text-text-primary">Purchase Orders</h2>
+                <p class="text-text-secondary mt-1">Manage medicine procurement and stock replenishment</p>
+            </div>
+        </div>
+
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="{% if category == 'error' %}bg-error-50 border-error-200 text-error-700{% else %}bg-success-50 border-success-200 text-success-700{% endif %} border rounded-lg p-4">
+                        <p class="text-sm font-medium">{{ message }}</p>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <!-- Add Purchase Order Form -->
+        <div class="card">
+            <h3 class="text-xl font-heading font-semibold text-text-primary mb-4">Create New Purchase Order</h3>
+            <form method="POST" action="{{ url_for('add_purchase_order') }}" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-text-primary mb-2">Supplier</label>
+                    <select name="supplier_id" class="input w-full" required>
+                        <option value="">Select Supplier</option>
+                        {% for supplier in suppliers %}
+                        <option value="{{ supplier.id }}">{{ supplier.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-text-primary mb-2">Medicine</label>
+                    <select name="medicine_id" class="input w-full" required>
+                        <option value="">Select Medicine</option>
+                        {% for medicine in medicines %}
+                        <option value="{{ medicine.id }}">{{ medicine.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-text-primary mb-2">Quantity</label>
+                    <input type="number" name="quantity" class="input w-full" required min="1">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-text-primary mb-2">Unit Price (₹)</label>
+                    <input type="number" name="unit_price" class="input w-full" required step="0.01" min="0">
+                </div>
+                
+                <div class="md:col-span-2 lg:col-span-3">
+                    <label class="block text-sm font-medium text-text-primary mb-2">Notes</label>
+                    <input type="text" name="notes" class="input w-full" placeholder="Optional notes">
+                </div>
+                
+                <div class="flex items-end">
+                    <button type="submit" class="btn btn-primary w-full">
+                        Create Order
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Filter -->
+        <div class="card">
+            <form method="GET" action="{{ url_for('purchase_orders') }}" class="flex gap-4">
+                <div class="flex-1">
+                    <label class="block text-sm font-medium text-text-primary mb-2">Filter by Status</label>
+                    <select name="status" class="input w-full" onchange="this.form.submit()">
+                        <option value="" {% if status_filter == '' %}selected{% endif %}>All Orders</option>
+                        <option value="pending" {% if status_filter == 'pending' %}selected{% endif %}>Pending</option>
+                        <option value="completed" {% if status_filter == 'completed' %}selected{% endif %}>Completed</option>
+                        <option value="cancelled" {% if status_filter == 'cancelled' %}selected{% endif %}>Cancelled</option>
+                    </select>
+                </div>
+            </form>
+        </div>
+
+        <!-- Orders Table -->
+        <div class="card overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="table">
+                    <thead>
+                        <tr class="bg-background">
+                            <th class="text-left font-semibold text-text-primary">Order ID</th>
+                            <th class="text-left font-semibold text-text-primary">Supplier</th>
+                            <th class="text-left font-semibold text-text-primary">Medicine</th>
+                            <th class="text-center font-semibold text-text-primary">Quantity</th>
+                            <th class="text-left font-semibold text-text-primary">Amount</th>
+                            <th class="text-left font-semibold text-text-primary">Order Date</th>
+                            <th class="text-center font-semibold text-text-primary">Status</th>
+                            <th class="text-center font-semibold text-text-primary">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if orders %}
+                            {% for order in orders %}
+                            <tr class="hover:bg-primary-50">
+                                <td class="font-medium text-text-primary">#PO{{ order.id }}</td>
+                                <td class="text-text-secondary">{{ order.supplier.name }}</td>
+                                <td>
+                                    <p class="font-medium text-text-primary">{{ order.medicine.name }}</p>
+                                    <p class="text-xs text-text-tertiary">{{ order.medicine.category }}</p>
+                                </td>
+                                <td class="text-center font-semibold text-text-primary">{{ order.quantity }}</td>
+                                <td class="font-medium text-text-primary">₹{{ "%.2f"|format(order.total_amount) }}</td>
+                                <td class="text-text-secondary text-sm">{{ order.order_date.strftime('%d %b %Y') }}</td>
+                                <td class="text-center">
+                                    <span class="badge {% if order.status == 'completed' %}badge-success{% elif order.status == 'pending' %}badge-warning{% else %}badge-error{% endif %}">
+                                        {{ order.status|title }}
+                                    </span>
+                                </td>
+                                <td class="text-center">
+                                    <div class="flex items-center justify-center gap-2">
+                                        {% if order.status == 'pending' %}
+                                        <form method="POST" action="{{ url_for('complete_purchase_order', id=order.id) }}" class="inline">
+                                            <button type="submit" class="btn btn-success text-xs px-3 py-1">
+                                                Complete
+                                            </button>
+                                        </form>
+                                        <form method="POST" action="{{ url_for('cancel_purchase_order', id=order.id) }}" class="inline">
+                                            <button type="submit" class="btn bg-error text-white text-xs px-3 py-1">
+                                                Cancel
+                                            </button>
+                                        </form>
+                                        {% else %}
+                                        <span class="text-text-tertiary text-xs">-</span>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td colspan="8" class="text-center py-12 text-text-tertiary">
+                                    No purchase orders found
+                                </td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    {% include 'footer.html' %}
+</body>
+</html>
